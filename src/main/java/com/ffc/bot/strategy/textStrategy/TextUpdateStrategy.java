@@ -33,7 +33,7 @@ public class TextUpdateStrategy implements Strategy {
             MongoDB.updateUser(userId, update.getMessage().getFrom().getFirstName());
         }
 
-        String bot_name = PropertiesReader.getProperty("bot_name");
+        String bot_name = PropertiesReader.getProperty("bot_name").toLowerCase();
 
         // clears command from @bot_name
         if(textUpdate.contains(bot_name)) {
@@ -72,6 +72,7 @@ public class TextUpdateStrategy implements Strategy {
             // checks if user is not replying to bot messages
             if(!update.getMessage().isReply()) {
                 responseMethod = new CheckAuthoriseMethod();
+                return responseMethod.getResponse(update,response,chatId);
             } else {
                 return null;
             }

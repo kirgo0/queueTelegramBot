@@ -43,7 +43,7 @@ public class CallbackUpdateStrategy implements Strategy {
         StrategyMethod responseMethod;
 
         if(!MongoDB.userAuthorised(userId)) {
-            if(!update.getMessage().isReply()) {
+            if(!update.getCallbackQuery().getMessage().isReply()) {
                 responseMethod = new CheckAuthoriseMethod();
                 return responseMethod.getResponse(update,null, chatId);
             } else {
