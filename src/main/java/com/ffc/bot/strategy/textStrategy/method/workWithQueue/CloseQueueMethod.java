@@ -30,8 +30,7 @@ public class CloseQueueMethod implements StrategyMethod {
                             .addTextLine(BotCommandsResponse.OPEN_QUEUE, TextFormat.Bold)
                             .get()
                     );
-            return List.of(response);
-        } else if (queueState.equalsIgnoreCase(QueueState.QUEUE_STARTED.toString())) {
+        } else if(queueState.equalsIgnoreCase(QueueState.QUEUE_STARTED.toString())) {
             response.setText(
                     new ResponseTextBuilder()
                             .addText(CallQueueResponse.CALL_QUEUE_IS_RUNNING, TextFormat.Monocular)
@@ -39,17 +38,7 @@ public class CloseQueueMethod implements StrategyMethod {
                             .addTextLine(BotCommandsResponse.STOP_CALL_QUEUE, TextFormat.Bold)
                             .get()
             );
-            return List.of(response);
-        } else {
-            response.setText(
-                    new ResponseTextBuilder()
-                            .addText(DefaultQueueResponse.QUEUE_IS_NOT_OPENED, TextFormat.Monocular)
-                            .addTextLine()
-                            .addTextLine(BotCommandsResponse.OPEN_QUEUE, TextFormat.Bold)
-                            .get()
-            );
-            return List.of(response);
         }
-
+        return List.of(response);
     }
 }

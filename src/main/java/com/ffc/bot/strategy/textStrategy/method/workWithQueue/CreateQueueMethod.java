@@ -60,11 +60,9 @@ public class CreateQueueMethod implements StrategyMethod {
         for (int i = 0; i < chatMembersCount; i++) {
             array.put(MongoDB.EMPTY_QUEUE_MEMBER);
         }
-
         MongoDB.updateQueue(array.toString(),chatId);
 
         response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
-
         return List.of(response);
     }
 }

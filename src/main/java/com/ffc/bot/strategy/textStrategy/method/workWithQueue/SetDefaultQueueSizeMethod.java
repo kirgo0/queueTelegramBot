@@ -26,78 +26,78 @@ public class SetDefaultQueueSizeMethod implements StrategyMethod {
 
     @Override
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
-        textUpdate = textUpdate.replace("/setdqs","");
+        textUpdate = textUpdate.replace("/setdqs", "");
 
         int nextQueueSize = Integer.parseInt(textUpdate.trim());
 
-        if(nextQueueSize <= 1 || nextQueueSize > 100) {
+        if (nextQueueSize <= 1 || nextQueueSize > 100) {
             response.setText(
                     new ResponseTextBuilder()
                             .addText(WorkWithQueueResponse.CANT_SET_QUEUE_SIZE, TextFormat.Monocular)
                             .addTextLine()
                             .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
                             .get()
-                    );
-            response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
-            return List.of(response);
-        }
-
-        if(MongoDB.getFieldValue(MongoDB.DEFAULT_QUEUE_SIZE,chatId).equalsIgnoreCase(String.valueOf(nextQueueSize))) {
-            response.setText(
-                    new ResponseTextBuilder()
-                            .addText(WorkWithQueueResponse.CURRENT_QUEUE_SIZE, TextFormat.Italic)
-                            .addText(String.valueOf(nextQueueSize),TextFormat.Italic)
-                            .addTextLine()
-                            .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
-                            .get()
             );
             response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
             return List.of(response);
         }
 
-        String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId);
-
-        // if queue is not closed
-        if(!queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
-            JSONArray queue = new JSONArray(MongoDB.getQueue(chatId));
-
-            boolean queueResized = QueueResizeModule.changeSize(queue, nextQueueSize);
-
+        String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE, chatId);
+        if (MongoDB.getFieldValue(MongoDB.DEFAULT_QUEUE_SIZE, chatId).equalsIgnoreCase(String.valueOf(nextQueueSize))) {
             ResponseTextBuilder responseTextBuilder = new ResponseTextBuilder();
-
-            responseTextBuilder
-                    .addText(WorkWithQueueResponse.DEFAULT_QUEUE_SIZE_CHANGED, TextFormat.Italic)
-                    .addText(String.valueOf(nextQueueSize), TextFormat.Italic);
-
-            MongoDB.updateField(MongoDB.DEFAULT_QUEUE_SIZE, String.valueOf(nextQueueSize),chatId);
-
-            // if current queue can be resized
-            if(queueResized) {
-                MongoDB.updateQueue(queue.toString(),chatId);
-                responseTextBuilder
-                        .addTextLine(WorkWithQueueResponse.CURRENT_QUEUE_SIZE_CHANGED, TextFormat.Italic)
-                        .addTextLine()
-                        .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE);
+            responseTextBuilder.addText(WorkWithQueueResponse.CURRENT_QUEUE_SIZE, TextFormat.Italic)
+                    .addText(String.valueOf(nextQueueSize), TextFormat.Italic)
+                    .addTextLine();
+            if(MongoDB.queueExists(chatId) && !queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
+                responseTextBuilder.addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE);
+                response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
             } else {
                 responseTextBuilder.addTextLine(WorkWithQueueResponse.CANT_CHANGE_QUEUE_SIZE, TextFormat.Monocular);
             }
             response.setText(responseTextBuilder.get());
-            response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
             return List.of(response);
         }
 
-        // if queue is closed
-        if(queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
-            MongoDB.updateField(MongoDB.DEFAULT_QUEUE_SIZE, String.valueOf(nextQueueSize),chatId);
+        MongoDB.updateField(MongoDB.DEFAULT_QUEUE_SIZE, String.valueOf(nextQueueSize), chatId);
 
-            response.setText(
-                    new ResponseTextBuilder()
-                            .addText(WorkWithQueueResponse.DEFAULT_QUEUE_SIZE_CHANGED, TextFormat.Italic)
-                            .addText(String.valueOf(nextQueueSize), TextFormat.Italic)
-                            .get()
-            );
+        ResponseTextBuilder responseTextBuilder = new ResponseTextBuilder();
+        responseTextBuilder
+                .addText(WorkWithQueueResponse.DEFAULT_QUEUE_SIZE_CHANGED, TextFormat.Italic)
+                .addText(String.valueOf(nextQueueSize), TextFormat.Italic)
+                .addTextLine();
+
+        if (MongoDB.queueExists(chatId)) {
+
+            if (queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
+                response.setText(responseTextBuilder
+                        .addTextLine(WorkWithQueueResponse.CANT_CHANGE_QUEUE_SIZE, TextFormat.Monocular)
+                        .get()
+                );
+                return List.of(response);
+            } else {
+                JSONArray queue = new JSONArray(MongoDB.getQueue(chatId));
+
+                boolean queueResized = QueueResizeModule.changeSize(queue, nextQueueSize);
+
+                MongoDB.updateField(MongoDB.DEFAULT_QUEUE_SIZE, String.valueOf(nextQueueSize), chatId);
+
+                // if current queue can be resized
+                if (queueResized) {
+                    MongoDB.updateQueue(queue.toString(), chatId);
+                    responseTextBuilder
+                            .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE);
+                } else {
+                    responseTextBuilder.addTextLine(WorkWithQueueResponse.CANT_CHANGE_QUEUE_SIZE, TextFormat.Monocular);
+                }
+
+                response.setText(responseTextBuilder.get());
+                response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
+                return List.of(response);
+                }
+        }
+        else {
+            response.setText(responseTextBuilder.get());
             return List.of(response);
         }
-        return null;
     }
 }

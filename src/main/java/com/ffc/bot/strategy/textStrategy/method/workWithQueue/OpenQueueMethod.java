@@ -18,36 +18,27 @@ public class OpenQueueMethod implements StrategyMethod {
 
     @Override
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
-        if(MongoDB.queueExists(chatId)) {
-            String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE, chatId);
+        String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE, chatId);
 
-            if(queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
-                MongoDB.updateField(MongoDB.QUEUE_STATE, QueueState.IN_PROCESS.toString(),chatId);
-                response.setText(
-                        new ResponseTextBuilder()
-                                .addText(WorkWithQueueResponse.QUEUE_IS_OPENED, TextFormat.Italic)
-                                .addTextLine()
-                                .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
-                                .get()
-                );
-            } else {
-                response.setText(
-                        new ResponseTextBuilder()
-                                .addText(WorkWithQueueResponse.ERROR_CAUSE_QUEUE_IS_OPENED, TextFormat.Monocular)
-                                .addTextLine()
-                                .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
-                                .get()
-                );
-            }
-            response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
-            return List.of(response);
+        if(queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
+            MongoDB.updateField(MongoDB.QUEUE_STATE, QueueState.IN_PROCESS.toString(),chatId);
+            response.setText(
+                    new ResponseTextBuilder()
+                            .addText(WorkWithQueueResponse.QUEUE_IS_OPENED, TextFormat.Italic)
+                            .addTextLine()
+                            .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
+                            .get()
+            );
         } else {
             response.setText(
                     new ResponseTextBuilder()
-                            .addText(DefaultQueueResponse.QUEUE_DOES_NOT_EXISTS)
+                            .addText(WorkWithQueueResponse.ERROR_CAUSE_QUEUE_IS_OPENED, TextFormat.Monocular)
+                            .addTextLine()
+                            .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
                             .get()
             );
-            return List.of(response);
         }
+        response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
+        return List.of(response);
     }
 }

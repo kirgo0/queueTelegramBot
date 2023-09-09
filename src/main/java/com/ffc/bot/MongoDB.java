@@ -71,7 +71,7 @@ public class MongoDB {
         try {
             customersCollection.insertOne(new Document()
                     .append(QUEUE_ID, chatId)
-                    .append(QUEUE,"")
+                    .append(QUEUE, "")
                     .append(QUEUE_STATE, QueueState.IN_PROCESS.toString())
                     .append(LAST_MESSAGE_ID,"")
                     .append(LAST_AUTHORISE_MESSAGE_ID,"")
@@ -85,9 +85,10 @@ public class MongoDB {
         MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
         MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_QUEUES);
 
-        Document userDoc = customersCollection.find(eq(QUEUE_ID, chatId)).first();
+        Document queueObj = customersCollection.find(eq(QUEUE_ID, chatId)).first();
+        boolean result = queueObj != null && (!Objects.equals(queueObj.getString(QUEUE), ""));
 
-        return userDoc != null;
+        return result;
     }
 
     public static boolean updateField(String fieldName, String newValue, String chatId) {

@@ -18,44 +18,25 @@ public class StopCallQueueMethod implements StrategyMethod {
 
     @Override
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
-        if(MongoDB.queueExists(chatId)) {
+        String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId);
 
-            String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId);
-
-            if(queueState.equalsIgnoreCase(QueueState.QUEUE_STARTED.toString())) {
-                MongoDB.updateField(MongoDB.QUEUE_STATE, QueueState.IN_PROCESS.toString(),chatId);
-                response.setText(
-                        new ResponseTextBuilder()
-                                .addText(CallQueueResponse.CALL_QUEUE_STOPPED, TextFormat.Italic)
-                                .addTextLine()
-                                .addTextLine(BotCommandsResponse.START_CALL_QUEUE, TextFormat.Bold)
-                                .get()
-                );
-            } else if(queueState.equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
-                response.setText(
-                        new ResponseTextBuilder()
-                                .addText(CallQueueResponse.ERROR_CALL_QUEUE_IS_NOT_STARTED)
-                                .addTextLine()
-                                .addTextLine(BotCommandsResponse.START_CALL_QUEUE, TextFormat.Bold)
-                                .get()
-                        );
-            } else if(queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
-                response.setText(
-                        new ResponseTextBuilder()
-                                .addText(DefaultQueueResponse.QUEUE_IS_NOT_OPENED, TextFormat.Monocular)
-                                .addTextLine()
-                                .addTextLine(BotCommandsResponse.OPEN_QUEUE, TextFormat.Bold)
-                                .get()
-                );
-            }
-        } else {
+        if(queueState.equalsIgnoreCase(QueueState.QUEUE_STARTED.toString())) {
+            MongoDB.updateField(MongoDB.QUEUE_STATE, QueueState.IN_PROCESS.toString(),chatId);
             response.setText(
                     new ResponseTextBuilder()
-                            .addText(DefaultQueueResponse.QUEUE_DOES_NOT_EXISTS)
+                            .addText(CallQueueResponse.CALL_QUEUE_STOPPED, TextFormat.Italic)
                             .addTextLine()
-                            .addTextLine(BotCommandsResponse.CREATE_QUEUE)
+                            .addTextLine(BotCommandsResponse.START_CALL_QUEUE, TextFormat.Bold)
                             .get()
             );
+        } else if(queueState.equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
+            response.setText(
+                    new ResponseTextBuilder()
+                            .addText(CallQueueResponse.ERROR_CALL_QUEUE_IS_NOT_STARTED, TextFormat.Monocular)
+                            .addTextLine()
+                            .addTextLine(BotCommandsResponse.START_CALL_QUEUE, TextFormat.Bold)
+                            .get()
+                    );
         }
         return List.of(response);
     }

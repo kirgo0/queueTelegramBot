@@ -20,29 +20,15 @@ public class GetQueueMethod implements StrategyMethod {
 
     @Override
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
-        if(!MongoDB.queueExists(chatId)) {
-            response.setText(
-                    new ResponseTextBuilder()
-                            .addText(DefaultQueueResponse.QUEUE_DOES_NOT_EXISTS)
-                            .addTextLine()
-                            .addTextLine(BotCommandsResponse.CREATE_QUEUE, TextFormat.Bold)
-                            .get()
-            );
-            return List.of(response);
-        }
         String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId);
-        if(queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
+        if(queueState.equalsIgnoreCase(QueueState.QUEUE_STARTED.toString())) {
             response.setText(
                     new ResponseTextBuilder()
-                            .addText(DefaultQueueResponse.QUEUE_IS_NOT_OPENED, TextFormat.Monocular)
+                            .addText(CallQueueResponse.CALL_QUEUE_TITLE, TextFormat.Bold)
                             .addTextLine()
-                            .addTextLine(BotCommandsResponse.OPEN_QUEUE, TextFormat.Bold)
-                            .addTextLine(BotCommandsResponse.CREATE_QUEUE, TextFormat.Bold)
+                            .addTextLine(CallQueueResponse.DEFAULT_RESPONSE)
                             .get()
             );
-            return List.of(response);
-        } else if(queueState.equalsIgnoreCase(QueueState.QUEUE_STARTED.toString())) {
-            response.setText(CallQueueResponse.DEFAULT_RESPONSE);
         }
         response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
         return List.of(response);

@@ -21,60 +21,39 @@ public class StartCallQueueMethod implements StrategyMethod {
 
     @Override
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
-        if(MongoDB.queueExists(chatId)) {
+        String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId);
 
-            String queueState = MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId);
+        if(queueState.equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
 
-            if(queueState.equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
-
-                JSONArray queue = new JSONArray(MongoDB.getQueue(chatId));
-                if(QueueCallModule.getCountOfQueueUsers(queue) < 2) {
-
-                    response.setText(
-                            new ResponseTextBuilder()
-                                    .addText(CallQueueResponse.QUEUE_IS_NOT_FULL, TextFormat.Monocular)
-                                    .addTextLine()
-                                    .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
-                                    .get()
-                            );
-                    response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
-
-                    return List.of(response);
-                }
-
-                MongoDB.updateField(MongoDB.QUEUE_STATE,QueueState.QUEUE_STARTED.toString(),chatId);
-
-                StrategyMethod method = new GetFirstAndNextQueueUsersMethod(queue);
-                return method.getResponse(update,response,chatId);
-            } else if(queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
+            JSONArray queue = new JSONArray(MongoDB.getQueue(chatId));
+            if(QueueCallModule.getCountOfQueueUsers(queue) < 2) {
                 response.setText(
                         new ResponseTextBuilder()
-                                .addText(DefaultQueueResponse.QUEUE_IS_NOT_OPENED, TextFormat.Monocular)
+                                .addText(CallQueueResponse.QUEUE_IS_NOT_FULL, TextFormat.Monocular)
                                 .addTextLine()
-                                .addTextLine(BotCommandsResponse.OPEN_QUEUE, TextFormat.Bold)
-                                .get()
-                        );
-                return List.of(response);
-            } else {
-                response.setText(
-                        new ResponseTextBuilder()
-                                .addText(CallQueueResponse.CALL_QUEUE_TITLE, TextFormat.Bold)
-                                .addTextLine()
-                                .addTextLine(CallQueueResponse.DEFAULT_RESPONSE)
+                                .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE)
                                 .get()
                         );
                 response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
+
                 return List.of(response);
             }
-        } else {
+
+            MongoDB.updateField(MongoDB.QUEUE_STATE,QueueState.QUEUE_STARTED.toString(),chatId);
+
+            StrategyMethod method = new GetFirstAndNextQueueUsersMethod(queue);
+            return method.getResponse(update,response,chatId);
+        } else if(queueState.equalsIgnoreCase(QueueState.QUEUE_STARTED.toString())){
             response.setText(
                     new ResponseTextBuilder()
-                            .addText(DefaultQueueResponse.QUEUE_DOES_NOT_EXISTS)
+                            .addText(CallQueueResponse.CALL_QUEUE_TITLE, TextFormat.Bold)
                             .addTextLine()
-                            .addTextLine(BotCommandsResponse.CREATE_QUEUE, TextFormat.Bold)
+                            .addTextLine(CallQueueResponse.DEFAULT_RESPONSE)
                             .get()
-            );
+                    );
+            response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
             return List.of(response);
         }
+        return null;
     }
 }

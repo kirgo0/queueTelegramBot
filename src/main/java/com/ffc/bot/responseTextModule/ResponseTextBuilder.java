@@ -2,7 +2,11 @@ package main.java.com.ffc.bot.responseTextModule;
 
 public class ResponseTextBuilder {
 
-    private StringBuilder sb = new StringBuilder();
+    public StringBuilder sb = new StringBuilder();
+
+//    public ResponseTextBuilder() {
+//        sb = new StringBuilder();
+//    }
 
     public ResponseTextBuilder startFormat(TextFormat format) {
         sb.append("<").append(getFormat(format)).append(">");
@@ -75,11 +79,6 @@ public class ResponseTextBuilder {
         String result = sb.toString();
         sb = new StringBuilder();
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return get();
     }
 
     private String getFormat(TextFormat format) {

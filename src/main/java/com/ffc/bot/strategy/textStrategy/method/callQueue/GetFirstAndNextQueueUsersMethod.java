@@ -38,6 +38,8 @@ public class GetFirstAndNextQueueUsersMethod implements StrategyMethod {
     @Override
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
         response.setParseMode("HTML");
+
+        // if there is no one in the queue, exits the call queue process
         if(QueueCallModule.queueEmpty(queue)) {
             MongoDB.updateField(MongoDB.QUEUE_STATE, QueueState.CLOSED.toString(),chatId);
 
@@ -53,21 +55,15 @@ public class GetFirstAndNextQueueUsersMethod implements StrategyMethod {
             return List.of(response);
         }
 
+        // if the queue is not empty
         String firstUserId = QueueCallModule.getFirstQueueUser(queue);
         String nextUserId = QueueCallModule.getNextQueueUser(queue);
 
         PersonalSendMessage messageFirstUser = new PersonalSendMessage();
         messageFirstUser.setChatId(firstUserId);
 
-        if(!queueChanged) {
-            messageFirstUser.setText(
-                    new ResponseTextBuilder()
-                            .addText(CallQueueResponse.CALL_QUEUE_TITLE, TextFormat.Bold)
-                            .addTextLine()
-                            .addTextLine(CallQueueResponse.FIRST_QUEUE_MEMBER_BODY)
-                            .get()
-            );
-        } else {
+        // if something has changed in the queue
+        if (queueChanged) {
             messageFirstUser.setText(
                     new ResponseTextBuilder()
                             .addText(CallQueueResponse.CALL_QUEUE_TITLE, TextFormat.Bold)
@@ -77,10 +73,18 @@ public class GetFirstAndNextQueueUsersMethod implements StrategyMethod {
                             .addTextLine(CallQueueResponse.FIRST_QUEUE_MEMBER_BODY)
                             .get()
             );
+        } else {
+            messageFirstUser.setText(
+                    new ResponseTextBuilder()
+                            .addText(CallQueueResponse.CALL_QUEUE_TITLE, TextFormat.Bold)
+                            .addTextLine()
+                            .addTextLine(CallQueueResponse.FIRST_QUEUE_MEMBER_BODY)
+                            .get()
+            );
         }
 
+        // if something has changed in the queue
         InlineKeyboardButton button = new InlineKeyboardButton(ButtonsText.LEAVE_CALL_QUEUE);
-
         StringBuilder sb = new StringBuilder();
         sb
                 .append(chatId)
@@ -92,9 +96,11 @@ public class GetFirstAndNextQueueUsersMethod implements StrategyMethod {
                 List.of(List.of(button))
         ));
 
+        // creates a button for the next user in the queue
         PersonalSendMessage messageNextUser = new PersonalSendMessage();
         messageNextUser.setChatId(nextUserId);
 
+        // checking if something in the queue has changed
         if(!queueChanged) {
             messageNextUser.setText(
                     new ResponseTextBuilder()
@@ -122,9 +128,12 @@ public class GetFirstAndNextQueueUsersMethod implements StrategyMethod {
                         .addTextLine(CallQueueResponse.DEFAULT_RESPONSE)
                         .get()
                 );
-        response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
 
+
+        response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
+        // if there is only one user in the queue
         if(messageNextUser.getChatId().equalsIgnoreCase(MongoDB.EMPTY_QUEUE_MEMBER)) return List.of(messageFirstUser, response);
+        // if there is two or more users in the queue
         return List.of(messageFirstUser, messageNextUser, response);
     }
 }
