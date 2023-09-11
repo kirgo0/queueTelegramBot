@@ -125,7 +125,7 @@ public class TextUpdateStrategy implements Strategy {
                 responseMethod = new QueueDoesNotExistDefaultMethod();
             }
         } else {
-            if(textUpdate.equalsIgnoreCase("/getInfo")){
+            if(textUpdate.equalsIgnoreCase("/help")){
                 responseMethod = new GetInfoMethod();
             } else if(textUpdate.equalsIgnoreCase("/createQueue")) {
                 responseMethod = new CreateQueueMethod();

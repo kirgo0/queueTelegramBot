@@ -15,7 +15,7 @@ public class WorkWithQueueResponse {
 
     public static final String ERROR_CAUSE_QUEUE_IS_OPENED = "Операція неможлива, спочатку необхідно закрити цю чергу";
     public static final String CANT_SET_QUEUE_SIZE = "Неможливо становити розмір черги менше 2 і більше 100";
-    public static final String CANT_CHANGE_QUEUE_SIZE = "Не вдалося змінити розмір поточної чеги";
+    public static final String CANT_CHANGE_QUEUE_SIZE = "Не вдалося змінити розмір поточної черги";
 
 //    public static final String QUEUE_IS_OPENED = "Черга відкрита";
 }

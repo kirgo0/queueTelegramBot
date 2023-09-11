@@ -1,9 +1,6 @@
 runtime: java17
 env: standard
 instance_class: B2
-handlers:
-  - url: .*
-    script: auto
 manual_scaling:
-  instances: 1
+  instances: 2
 service_account: sustained-rhino-397822@appspot.gserviceaccount.com

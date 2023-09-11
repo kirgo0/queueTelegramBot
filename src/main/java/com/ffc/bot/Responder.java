@@ -73,9 +73,9 @@ public class Responder extends TelegramLongPollingBot {
                 }
                 // updating last messages id
                 Message message = (Message) sendApiMethod(method);
-                if(!method.getClass().equals(AuthoriseMessage.class)) {
+                if(method.getClass().equals(SendMessage.class)) {
                     MongoDB.updateField(MongoDB.LAST_MESSAGE_ID,message.getMessageId().toString(),message.getChatId().toString());
-                } else {
+                } else if(method.getClass().equals(AuthoriseMessage.class)) {
                     MongoDB.updateField(MongoDB.LAST_AUTHORISE_MESSAGE_ID,message.getMessageId().toString(),message.getChatId().toString());
                 }
             } catch (TelegramApiException e) {
