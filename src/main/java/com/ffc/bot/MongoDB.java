@@ -81,6 +81,14 @@ public class MongoDB {
         }
     }
 
+    public static boolean chatRegistered(String chatId) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_QUEUES);
+
+        Document result = customersCollection.find(eq(QUEUE_ID, chatId)).first();
+        return result != null;
+    }
+
     public static boolean queueExists(String chatId) {
         MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
         MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_QUEUES);
@@ -89,6 +97,17 @@ public class MongoDB {
         boolean result = queueObj != null && (!Objects.equals(queueObj.getString(QUEUE), ""));
 
         return result;
+    }
+
+    public static boolean deleteQueue(String chatId) {
+        if(queueExists(chatId)) {
+            MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+            MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_QUEUES);
+
+            DeleteResult result = customersCollection.deleteOne(eq(QUEUE_ID, chatId));
+            return result.wasAcknowledged();
+        }
+        return false;
     }
 
     public static boolean updateField(String fieldName, String newValue, String chatId) {

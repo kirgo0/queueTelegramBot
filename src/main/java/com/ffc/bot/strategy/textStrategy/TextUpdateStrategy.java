@@ -66,7 +66,6 @@ public class TextUpdateStrategy implements Strategy {
 
         StrategyMethod responseMethod = null;
 
-
         // checks if user is authorised
         if(!MongoDB.userAuthorised(userId)) {
             // checks if user is not replying to bot messages
@@ -76,6 +75,12 @@ public class TextUpdateStrategy implements Strategy {
             } else {
                 return null;
             }
+        }
+
+        // check if user send command in personal messages
+        if (!(chatId.toCharArray()[0] == '-')) {
+            responseMethod = new MessageIsPersonalMethod(userId);
+            return responseMethod.getResponse(update, null, chatId);
         }
 
         // methods that do not have a built-in check for a queue existing

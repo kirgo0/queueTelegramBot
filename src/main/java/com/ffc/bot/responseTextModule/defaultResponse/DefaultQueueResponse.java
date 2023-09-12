@@ -14,5 +14,6 @@ public class DefaultQueueResponse {
     public static final String NEED_TO_AUTHORISE  = "Для використання цього бота необхідно авторизуватись";
     public static final String QUEUE_IS_NOT_OPENED = "Операція неможлива, спочатку необхідно відкрити чергу";
     public static final String QUEUE_DOES_NOT_EXISTS = "Операція неможлива, спочатку необхідно створити чергу";
+    public static final String CANT_USE_THIS_COMMAND_HERE = "Операція неможлива, використання команд можливе лише в групах";
 
 }

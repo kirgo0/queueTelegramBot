@@ -51,9 +51,6 @@ public class Responder extends TelegramLongPollingBot {
                     // if the user requests textMessage, finds the last sent message and deletes it
                     if(method.getClass().equals(ChatJoinMessage.class)) {
                         String chatId = ((SendMessage) method).getChatId();
-                        // adds a new closed queue to the db to avoid errors
-                        MongoDB.createNewQueue(chatId);
-                        MongoDB.updateField(MongoDB.QUEUE_STATE, QueueState.CLOSED.toString(), chatId);
                     } else if(method.getClass().equals(SendMessage.class)) {
                         String chatId = ((SendMessage) method).getChatId();
                         if(!MongoDB.getFieldValue(MongoDB.LAST_MESSAGE_ID,chatId).equalsIgnoreCase("" )) {
