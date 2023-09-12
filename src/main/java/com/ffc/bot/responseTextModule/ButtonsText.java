@@ -8,4 +8,7 @@ public class ButtonsText {
     public static final String DENY_SWAP_REQUEST = "Відхилити";
 
     public static final String LEAVE_CALL_QUEUE = "Залишити чергу";
+
+    public static final String EMPTY_QUEUE_BUTTON_SMALL = "______";
+    public static final String EMPTY_QUEUE_BUTTON_LARGE = "_______________________";
 }

@@ -30,6 +30,7 @@ public class MongoDB {
     public static final String LAST_MESSAGE_ID = "LAST_MESSAGE_ID";
     public static final String LAST_AUTHORISE_MESSAGE_ID = "LAST_AUTHORISE_MESSAGE_ID";
     public static final String DEFAULT_QUEUE_SIZE = "DEFAULT_QUEUE_SIZE";
+    public static final String DEFAULT_QUEUE_VIEW = "DEFAULT_QUEUE_VIEW";
 
     private static final String DATABASE_USERS = "users";
     public static final String USER_ID = "ID";
@@ -73,9 +74,10 @@ public class MongoDB {
                     .append(QUEUE_ID, chatId)
                     .append(QUEUE, "")
                     .append(QUEUE_STATE, QueueState.IN_PROCESS.toString())
-                    .append(LAST_MESSAGE_ID,"")
-                    .append(LAST_AUTHORISE_MESSAGE_ID,"")
-                    .append(DEFAULT_QUEUE_SIZE,"0"));
+                    .append(LAST_MESSAGE_ID, "")
+                    .append(LAST_AUTHORISE_MESSAGE_ID, "")
+                    .append(DEFAULT_QUEUE_SIZE, "0")
+                    .append(DEFAULT_QUEUE_VIEW, false));
         } catch (MongoException e) {
             e.printStackTrace();
         }
@@ -126,6 +128,23 @@ public class MongoDB {
         String result = Objects.requireNonNull(customersCollection.find(eq(QUEUE_ID, chatId)).first()).getString(fieldName);
 
         return result;
+    }
+
+    public static boolean getQueueView(String chatId) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_QUEUES);
+
+        boolean result = Objects.requireNonNull(customersCollection.find(eq(QUEUE_ID, chatId)).first()).getBoolean(DEFAULT_QUEUE_VIEW);
+
+        return result;
+    }
+
+    public static boolean setQueueView(String chatId, boolean value) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_QUEUES);
+
+        UpdateResult result = customersCollection.updateOne(eq(QUEUE_ID, chatId), new Document("$set", new Document(DEFAULT_QUEUE_VIEW, value)));
+        return result.wasAcknowledged();
     }
 
     public static boolean updateQueue(String queue, String chatId) {

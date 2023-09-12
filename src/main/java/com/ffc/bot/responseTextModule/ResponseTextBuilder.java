@@ -24,6 +24,12 @@ public class ResponseTextBuilder {
         return this;
     }
 
+    public ResponseTextBuilder addText(int text) {
+        sb.append(" ");
+        sb.append(text);
+        return this;
+    }
+
     public ResponseTextBuilder addText(String text, TextFormat[] formats) {
         sb.append(" ");
         for (TextFormat format: formats) {

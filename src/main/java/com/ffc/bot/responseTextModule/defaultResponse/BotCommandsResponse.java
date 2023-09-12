@@ -7,6 +7,7 @@ public class BotCommandsResponse {
 //        getqueue - отримати чергу
 //        closequeue - закрити чергу
 //        openqueue - відкрити чергу
+//        changequeueview - змінити вигляд черги за замовчуванням
 //        setdqs - (число) задати розмір черги за замовчуванням
 //        startcallqueue - почати прохід по черзі
 //        stopcallqueue - зупинити прохід по черзі
@@ -18,6 +19,7 @@ public class BotCommandsResponse {
     public static final String CLOSE_QUEUE = "/closeQueue - закрити чергу";
     public static final String OPEN_QUEUE = "/openQueue - відкрити чергу";
     public static final String SET_DQS = "/setdqs - [число] задати розмір черги за замовчуванням";
+    public static final String CHANGE_QUEUE_VIEW = "/changeQueueView - змінити вигляд черги за замовчуванням";
     public static final String START_CALL_QUEUE = "/startCallQueue - почати прохід по черзі";
     public static final String STOP_CALL_QUEUE = "/stopCallQueue - зупинити прохід по черзі";
     public static final String SKIP_QUEUE_MEMBER = "/skipQueueMember - пропустити першого користувача в черзі (якщо заснув)";

@@ -8,8 +8,11 @@ public class WorkWithQueueResponse {
     public static final String QUEUE_IS_OPENED = "Черга відкрита";
 
     public static final String CURRENT_QUEUE_SIZE = "Поточна довжина черги - ";
-    public static final String DEFAULT_QUEUE_SIZE_CHANGED = "Встановлено розмір черги за замовчуванням - ";
+    public static final String DEFAULT_QUEUE_SIZE_CHANGED = "Встановлено розмір черги за замовчуванням -";
     public static final String CURRENT_QUEUE_SIZE_CHANGED = "Розмір поточної черги було змінено.";
+    public static final String QUEUE_VIEW_CHANGED = "Встановлено вигляд черги за замовчуванням -";
+    public static final String QUEUE_VIEW_LIST = "Список";
+    public static final String QUEUE_VIEW_TABLE = "Таблиця";
 
     // BAD RESPONSES:
 

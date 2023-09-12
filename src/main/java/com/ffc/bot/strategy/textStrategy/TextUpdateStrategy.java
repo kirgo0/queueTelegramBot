@@ -134,7 +134,7 @@ public class TextUpdateStrategy implements Strategy {
                 responseMethod = new GetInfoMethod();
             } else if(textUpdate.equalsIgnoreCase("/createQueue")) {
                 responseMethod = new CreateQueueMethod();
-            } else if(textUpdate.contains("/createQueue")) {
+            } else if(textUpdate.contains("/createqueue")) {
                 // TODO
 //            if(MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId).equalsIgnoreCase(QueueState.CLOSED.toString())) {
 //                textUpdate = textUpdate.replace("/createQueue","/setdqs");
@@ -142,6 +142,8 @@ public class TextUpdateStrategy implements Strategy {
 //            responseMethod = new SetDefaultQueueSizeMethod(response, textUpdate);
             } else if(textUpdate.contains("/setdqs")) {
                 responseMethod = new SetDefaultQueueSizeMethod(textUpdate);
+            } else if(textUpdate.equalsIgnoreCase("/changeQueueView")) {
+                responseMethod = new ChangeQueueViewMethod();
             }
         }
 

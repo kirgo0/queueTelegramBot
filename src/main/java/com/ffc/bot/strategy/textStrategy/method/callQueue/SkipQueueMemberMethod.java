@@ -5,7 +5,6 @@ import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
 import main.java.com.ffc.bot.responseTextModule.TextFormat;
 import main.java.com.ffc.bot.responseTextModule.defaultResponse.BotCommandsResponse;
 import main.java.com.ffc.bot.responseTextModule.defaultResponse.CallQueueResponse;
-import main.java.com.ffc.bot.responseTextModule.defaultResponse.DefaultQueueResponse;
 import main.java.com.ffc.bot.queueHandler.QueueCallModule;
 import main.java.com.ffc.bot.state.QueueState;
 import main.java.com.ffc.bot.strategy.textStrategy.method.StrategyMethod;
@@ -36,8 +35,9 @@ public class SkipQueueMemberMethod implements StrategyMethod {
         } else if(queueState.equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
             response.setText(
                     new ResponseTextBuilder()
-                            .addText(CallQueueResponse.ERROR_CALL_QUEUE_IS_NOT_STARTED)
-                            .addTextLine(BotCommandsResponse.STOP_CALL_QUEUE, TextFormat.Bold)
+                            .addText(CallQueueResponse.ERROR_CALL_QUEUE_IS_NOT_STARTED, TextFormat.Monocular)
+                            .addTextLine()
+                            .addTextLine(BotCommandsResponse.START_CALL_QUEUE, TextFormat.Bold)
                             .get()
                     );
             return List.of(response);
