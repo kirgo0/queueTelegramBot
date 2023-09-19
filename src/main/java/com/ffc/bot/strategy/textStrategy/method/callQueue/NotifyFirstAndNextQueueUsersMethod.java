@@ -11,7 +11,7 @@ import main.java.com.ffc.bot.strategy.CallbackData;
 import main.java.com.ffc.bot.queueHandler.QueueCallModule;
 import main.java.com.ffc.bot.queueHandler.QueueMarkupConstructor;
 import main.java.com.ffc.bot.specialMessage.PersonalSendMessage;
-import main.java.com.ffc.bot.strategy.textStrategy.method.StrategyMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.TextStrategyMethod;
 import org.json.JSONArray;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,16 +21,16 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.List;
 
-public class GetFirstAndNextQueueUsersMethod implements StrategyMethod {
+public class NotifyFirstAndNextQueueUsersMethod implements TextStrategyMethod {
 
     private JSONArray queue;
     private boolean queueChanged = false;
 
-    public GetFirstAndNextQueueUsersMethod(JSONArray queue) {
+    public NotifyFirstAndNextQueueUsersMethod(JSONArray queue) {
         this.queue = queue;
     }
 
-    public GetFirstAndNextQueueUsersMethod(JSONArray queue, boolean queueChanged) {
+    public NotifyFirstAndNextQueueUsersMethod(JSONArray queue, boolean queueChanged) {
         this.queue = queue;
         this.queueChanged = queueChanged;
     }

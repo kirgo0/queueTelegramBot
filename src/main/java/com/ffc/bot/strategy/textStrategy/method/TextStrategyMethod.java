@@ -6,6 +6,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-public interface StrategyMethod {
+public interface TextStrategyMethod {
     List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId);
 }

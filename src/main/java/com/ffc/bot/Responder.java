@@ -2,8 +2,7 @@ package main.java.com.ffc.bot;
 
 import main.java.com.ffc.bot.specialMessage.AuthoriseMessage;
 import main.java.com.ffc.bot.specialMessage.ChatJoinMessage;
-import main.java.com.ffc.bot.state.QueueState;
-import main.java.com.ffc.bot.strategy.CallbackUpdateStrategy;
+import main.java.com.ffc.bot.strategy.callbackStrategy.CallbackUpdateStrategy;
 import main.java.com.ffc.bot.strategy.textStrategy.TextUpdateStrategy;
 import main.java.com.ffc.bot.strategy.ChatJoinStrategy;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

@@ -7,7 +7,7 @@ import main.java.com.ffc.bot.responseTextModule.defaultResponse.BotCommandsRespo
 import main.java.com.ffc.bot.responseTextModule.defaultResponse.CallQueueResponse;
 import main.java.com.ffc.bot.queueHandler.QueueCallModule;
 import main.java.com.ffc.bot.state.QueueState;
-import main.java.com.ffc.bot.strategy.textStrategy.method.StrategyMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.TextStrategyMethod;
 import org.json.JSONArray;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkipQueueMemberMethod implements StrategyMethod {
+public class SkipQueueMemberMethod implements TextStrategyMethod {
 
     @Override
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
@@ -30,7 +30,7 @@ public class SkipQueueMemberMethod implements StrategyMethod {
             queue.put(MongoDB.EMPTY_QUEUE_MEMBER);
             MongoDB.updateQueue(queue.toString(),chatId);
 
-            List<BotApiMethod> methods = new ArrayList<>(new GetFirstAndNextQueueUsersMethod(queue).getResponse(update,response,chatId));
+            List<BotApiMethod> methods = new ArrayList<>(new NotifyFirstAndNextQueueUsersMethod(queue).getResponse(update,response,chatId));
             return methods;
         } else if(queueState.equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
             response.setText(

@@ -15,7 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckAuthoriseMethod implements StrategyMethod {
+public class CheckAuthoriseMethod implements TextStrategyMethod {
 
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
         AuthoriseMessage authoriseMessage = new AuthoriseMessage();

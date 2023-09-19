@@ -8,7 +8,7 @@ import main.java.com.ffc.bot.responseTextModule.TextFormat;
 import main.java.com.ffc.bot.responseTextModule.defaultResponse.DefaultQueueResponse;
 import main.java.com.ffc.bot.responseTextModule.defaultResponse.WorkWithQueueResponse;
 import main.java.com.ffc.bot.state.QueueState;
-import main.java.com.ffc.bot.strategy.textStrategy.method.StrategyMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.TextStrategyMethod;
 import org.json.JSONArray;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-public class SetDefaultQueueSizeMethod implements StrategyMethod {
+public class SetDefaultQueueSizeMethod implements TextStrategyMethod {
 
     private String textUpdate;
 

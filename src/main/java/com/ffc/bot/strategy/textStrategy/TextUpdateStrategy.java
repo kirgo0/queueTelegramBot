@@ -7,6 +7,7 @@ import main.java.com.ffc.bot.responseTextModule.defaultResponse.DefaultQueueResp
 import main.java.com.ffc.bot.specialMessage.PersonalSendMessage;
 import main.java.com.ffc.bot.state.QueueState;
 import main.java.com.ffc.bot.strategy.Strategy;
+import main.java.com.ffc.bot.strategy.textStrategy.method.TextStrategyMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.*;
 import main.java.com.ffc.bot.strategy.textStrategy.method.callQueue.SkipQueueMemberMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.callQueue.StartCallQueueMethod;
@@ -64,7 +65,7 @@ public class TextUpdateStrategy implements Strategy {
             return List.of(message);
         }
 
-        StrategyMethod responseMethod = null;
+        TextStrategyMethod responseMethod = null;
 
         // checks if user is authorised
         if(!MongoDB.userAuthorised(userId)) {

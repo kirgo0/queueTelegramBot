@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-public class MessageIsPersonalMethod implements StrategyMethod {
+public class MessageIsPersonalMethod implements TextStrategyMethod {
 
     private String userId;
 
