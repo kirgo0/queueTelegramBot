@@ -13,6 +13,7 @@ public class BotCommandsResponse {
 //        stopcallqueue - зупинити прохід по черзі
 //        skipqueuemember - пропустити першого користувача в черзі (якщо заснув)
 //        help - як користуватись ботом
+//        normalizequeue - видалити всі порожні місця в черзі
 
     public static final String CREATE_QUEUE = "/createQueue - створити нову чергу";
     public static final String GET_QUEUE = "/getQueue - отримати чергу";
@@ -23,5 +24,6 @@ public class BotCommandsResponse {
     public static final String START_CALL_QUEUE = "/startCallQueue - почати прохід по черзі";
     public static final String STOP_CALL_QUEUE = "/stopCallQueue - зупинити прохід по черзі";
     public static final String SKIP_QUEUE_MEMBER = "/skipQueueMember - пропустити першого користувача в черзі (якщо заснув)";
+    public static final String NORMALIZE_QUEUE = "/normalizeQueue - видалити всі порожні місця в черзі";
     public static final String HELP = "/help - як користуватись ботом";
 }

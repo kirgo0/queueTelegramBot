@@ -1,10 +1,11 @@
-package main.java.com.ffc.bot.strategy.callbackStrategy.method;
+package main.java.com.ffc.bot.strategy.callbackStrategy.method.workWithQueue;
 
 import main.java.com.ffc.bot.MongoDB;
 import main.java.com.ffc.bot.queueHandler.QueueCallModule;
 import main.java.com.ffc.bot.queueHandler.QueueMarkupConstructor;
 import main.java.com.ffc.bot.state.QueueState;
 import main.java.com.ffc.bot.strategy.CallbackData;
+import main.java.com.ffc.bot.strategy.callbackStrategy.method.CallbackStrategyMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.callQueue.NotifyFirstAndNextQueueUsersMethod;
 import org.json.JSONArray;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;

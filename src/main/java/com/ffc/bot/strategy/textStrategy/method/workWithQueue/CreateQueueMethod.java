@@ -22,20 +22,23 @@ public class CreateQueueMethod implements TextStrategyMethod {
     public List<BotApiMethod> getResponse(Update update, SendMessage response, String chatId) {
         if(!MongoDB.chatRegistered(chatId)) {
             MongoDB.createNewQueue(chatId);
-        } else if(MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId).equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
-            response.setText(
-                    new ResponseTextBuilder()
-                            .addText(WorkWithQueueResponse.ERROR_CAUSE_QUEUE_IS_OPENED, TextFormat.Monocular)
-                            .addTextLine()
-                            .addTextLine(BotCommandsResponse.CLOSE_QUEUE, TextFormat.Bold)
-                            .get()
-            );
-            response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
-            return List.of(response);
-        } else if(MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId).equalsIgnoreCase(QueueState.CLOSED.toString())) {
-            MongoDB.updateQueue("",chatId);
-            MongoDB.updateField(MongoDB.QUEUE_STATE,QueueState.IN_PROCESS.toString(),chatId);
-            MongoDB.clearSwapRequests(chatId);
+        }
+        if(!MongoDB.getQueue(chatId).equalsIgnoreCase("")) {
+            if(MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId).equalsIgnoreCase(QueueState.IN_PROCESS.toString())) {
+                response.setText(
+                        new ResponseTextBuilder()
+                                .addText(WorkWithQueueResponse.ERROR_CAUSE_QUEUE_IS_OPENED, TextFormat.Monocular)
+                                .addTextLine()
+                                .addTextLine(BotCommandsResponse.CLOSE_QUEUE, TextFormat.Bold)
+                                .get()
+                );
+                response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
+                return List.of(response);
+            } else if(MongoDB.getFieldValue(MongoDB.QUEUE_STATE,chatId).equalsIgnoreCase(QueueState.CLOSED.toString())) {
+                MongoDB.updateQueue("",chatId);
+                MongoDB.updateField(MongoDB.QUEUE_STATE,QueueState.IN_PROCESS.toString(),chatId);
+                MongoDB.clearSwapRequests(chatId);
+            }
         }
 
         // default queue length (works only if chat members count can't be determined)
@@ -54,13 +57,14 @@ public class CreateQueueMethod implements TextStrategyMethod {
         }
 
         // new array for DB
-        JSONArray array = new JSONArray();
+        JSONArray queue = new JSONArray();
 
         // insert empty values
         for (int i = 0; i < chatMembersCount; i++) {
-            array.put(MongoDB.EMPTY_QUEUE_MEMBER);
+            queue.put(MongoDB.EMPTY_QUEUE_MEMBER);
         }
-        MongoDB.updateQueue(array.toString(),chatId);
+
+        MongoDB.updateQueue(queue.toString(), chatId);
 
         response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
         return List.of(response);

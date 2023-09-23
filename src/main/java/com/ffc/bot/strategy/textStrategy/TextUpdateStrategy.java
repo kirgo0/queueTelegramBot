@@ -12,6 +12,9 @@ import main.java.com.ffc.bot.strategy.textStrategy.method.*;
 import main.java.com.ffc.bot.strategy.textStrategy.method.callQueue.SkipQueueMemberMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.callQueue.StartCallQueueMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.callQueue.StopCallQueueMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.error.MessageIsPersonalMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.error.QueueDoesNotExistDefaultMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.error.QueueIsNotOpenMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.workWithQueue.*;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -92,6 +95,7 @@ public class TextUpdateStrategy implements Strategy {
                 "/startcallqueue",
                 "/stopcallqueue",
                 "/skipqueuemember"
+                ,"/normalizequeue"
         );
 
         if(needsExistingQueueMethods.contains(textUpdate)) {
@@ -102,7 +106,8 @@ public class TextUpdateStrategy implements Strategy {
                         "/getqueue",
                         "/startcallqueue",
                         "/stopcallqueue",
-                        "/skipqueuemember"
+                        "/skipqueuemember",
+                        "/normalizequeue"
                 );
                 if(needsNotClosedQueueMethods.contains(textUpdate)) {
                     // checking if queue is not closed
@@ -117,6 +122,8 @@ public class TextUpdateStrategy implements Strategy {
                             responseMethod = new StopCallQueueMethod();
                         } else if(textUpdate.equalsIgnoreCase("/skipQueueMember")){
                             responseMethod = new SkipQueueMemberMethod();
+                        } else if (textUpdate.equalsIgnoreCase("/normalizequeue")) {
+                            responseMethod = new NormalizeQueueMethod();
                         }
                     } else {
                         responseMethod = new QueueIsNotOpenMethod();

@@ -51,8 +51,6 @@ public class SetDefaultQueueSizeMethod implements TextStrategyMethod {
             if(MongoDB.queueExists(chatId) && !queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
                 responseTextBuilder.addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE);
                 response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
-            } else {
-                responseTextBuilder.addTextLine(WorkWithQueueResponse.CANT_CHANGE_QUEUE_SIZE, TextFormat.Monocular);
             }
             response.setText(responseTextBuilder.get());
             return List.of(response);
@@ -67,14 +65,6 @@ public class SetDefaultQueueSizeMethod implements TextStrategyMethod {
                 .addTextLine();
 
         if (MongoDB.queueExists(chatId)) {
-
-            if (queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) {
-                response.setText(responseTextBuilder
-                        .addTextLine(WorkWithQueueResponse.CANT_CHANGE_QUEUE_SIZE, TextFormat.Monocular)
-                        .get()
-                );
-                return List.of(response);
-            } else {
                 JSONArray queue = new JSONArray(MongoDB.getQueue(chatId));
 
                 boolean queueResized = QueueResizeModule.changeSize(queue, nextQueueSize);
@@ -84,16 +74,17 @@ public class SetDefaultQueueSizeMethod implements TextStrategyMethod {
                 // if current queue can be resized
                 if (queueResized) {
                     MongoDB.updateQueue(queue.toString(), chatId);
-                    responseTextBuilder
+                    if(!queueState.equalsIgnoreCase(QueueState.CLOSED.toString()))
+                        responseTextBuilder
                             .addTextLine(DefaultQueueResponse.CHOOSE_A_PLACE);
                 } else {
                     responseTextBuilder.addTextLine(WorkWithQueueResponse.CANT_CHANGE_QUEUE_SIZE, TextFormat.Monocular);
                 }
 
                 response.setText(responseTextBuilder.get());
-                response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
+                if(!queueState.equalsIgnoreCase(QueueState.CLOSED.toString())) response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
                 return List.of(response);
-                }
+//                }
         }
         else {
             response.setText(responseTextBuilder.get());

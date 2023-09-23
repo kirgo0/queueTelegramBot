@@ -1,4 +1,4 @@
-package main.java.com.ffc.bot.strategy.callbackStrategy.method;
+package main.java.com.ffc.bot.strategy.callbackStrategy.method.swap;
 
 import main.java.com.ffc.bot.MongoDB;
 import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
@@ -7,6 +7,7 @@ import main.java.com.ffc.bot.responseTextModule.defaultResponse.SwapResponse;
 import main.java.com.ffc.bot.specialMessage.PersonalSendMessage;
 import main.java.com.ffc.bot.state.QueueState;
 import main.java.com.ffc.bot.strategy.CallbackData;
+import main.java.com.ffc.bot.strategy.callbackStrategy.method.CallbackStrategyMethod;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;

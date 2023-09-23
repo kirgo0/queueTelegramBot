@@ -1,9 +1,10 @@
-package main.java.com.ffc.bot.strategy.textStrategy.method;
+package main.java.com.ffc.bot.strategy.textStrategy.method.error;
 
 import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
 import main.java.com.ffc.bot.responseTextModule.TextFormat;
 import main.java.com.ffc.bot.responseTextModule.defaultResponse.DefaultQueueResponse;
 import main.java.com.ffc.bot.specialMessage.PersonalSendMessage;
+import main.java.com.ffc.bot.strategy.textStrategy.method.TextStrategyMethod;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
