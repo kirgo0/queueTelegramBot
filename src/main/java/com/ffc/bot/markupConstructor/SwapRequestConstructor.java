@@ -1,5 +1,6 @@
-package main.java.com.ffc.bot;
+package main.java.com.ffc.bot.markupConstructor;
 
+import main.java.com.ffc.bot.MongoDB;
 import main.java.com.ffc.bot.queueHandler.QueueMarkupConstructor;
 import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
 import main.java.com.ffc.bot.responseTextModule.TextFormat;

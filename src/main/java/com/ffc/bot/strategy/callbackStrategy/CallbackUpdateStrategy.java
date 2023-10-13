@@ -6,9 +6,7 @@ import main.java.com.ffc.bot.strategy.Strategy;
 import main.java.com.ffc.bot.strategy.callbackStrategy.method.*;
 import main.java.com.ffc.bot.strategy.callbackStrategy.method.swap.SwapAcceptedMethod;
 import main.java.com.ffc.bot.strategy.callbackStrategy.method.swap.SwapDeniedMethod;
-import main.java.com.ffc.bot.strategy.callbackStrategy.method.workWithQueue.CalledOutMethod;
-import main.java.com.ffc.bot.strategy.callbackStrategy.method.workWithQueue.QueueInMethod;
-import main.java.com.ffc.bot.strategy.callbackStrategy.method.workWithQueue.QueueOutMethod;
+import main.java.com.ffc.bot.strategy.callbackStrategy.method.workWithQueue.*;
 import main.java.com.ffc.bot.strategy.textStrategy.method.CheckAuthoriseMethod;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -42,6 +40,7 @@ public class CallbackUpdateStrategy implements Strategy {
 
         SendMessage response = new SendMessage();
         response.setChatId(chatId);
+        response.setParseMode("HTML");
 
         String clickedMessageId = update.getCallbackQuery().getMessage().getMessageId().toString();
 
@@ -63,6 +62,24 @@ public class CallbackUpdateStrategy implements Strategy {
         }
         else if(callbackUpdate.contains(CallbackData.GetInfo.toString())) {
             responseMethod = new CallbackGetInfoMethod();
+        }
+        else if (callbackUpdate.contains(CallbackData.GetSavedQueue.toString())) {
+            responseMethod = new GetSavedQueueMethod(clickedMessageId);
+        }
+        else if (callbackUpdate.contains(CallbackData.SaveQueueBackMenu.toString())) {
+            responseMethod = new SavedQueueBackMenuMethod(clickedMessageId);
+        }
+        else if (callbackUpdate.contains(CallbackData.RemoveSavedQueue.toString())) {
+            responseMethod = new RemoveSavedQueueMethod(clickedMessageId);
+        }
+        else if (callbackUpdate.contains(CallbackData.LoadSavedQueue.toString())) {
+            responseMethod = new LoadSavedQueueMethod(clickedMessageId);
+        }
+        else if (callbackUpdate.contains(CallbackData.AcceptSavedQueue.toString())) {
+            responseMethod = new AcceptRemoveSavedQueueMethod();
+        }
+        else if (callbackUpdate.contains(CallbackData.DenySavedQueue.toString())) {
+            responseMethod = new DenyRemoveSavedQueueMethod(clickedMessageId);
         }
 
         if(responseMethod != null) return responseMethod.getResponse(update, response, chatId, userId, callbackUpdate);

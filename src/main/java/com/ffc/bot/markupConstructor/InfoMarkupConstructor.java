@@ -1,4 +1,4 @@
-package main.java.com.ffc.bot;
+package main.java.com.ffc.bot.markupConstructor;
 
 import main.java.com.ffc.bot.strategy.CallbackData;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;

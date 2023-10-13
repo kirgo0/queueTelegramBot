@@ -11,6 +11,7 @@ import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ import static com.mongodb.client.model.Filters.eq;
 public class MongoDB {
 
     public static final String EMPTY_QUEUE_MEMBER = "_";
+    public static final String DEFAULT_SAVED_QUEUE_NAME = "PREVIOUS QUEUE";
 
     private static MongoClient mongoClient;
     private static final String DATABASE_NAME = "Queue_bot";
@@ -48,6 +50,11 @@ public class MongoDB {
     private static final String DATABASE_INFO = "info";
     public static final String INFO_ID = "ID";
     public static final String INFO = "INFO";
+
+    private static final String DATABASE_SAVED_QUEUES = "savedQueues";
+    public static final String SAVED_QUEUE_ID = "ID";
+    public static final String SAVED_QUEUE_NAME = "QUEUE_NAME";
+    public static final String SAVED_QUEUE = "QUEUE";
 
 
     public static void connectToDatabase() {
@@ -313,6 +320,115 @@ public class MongoDB {
         MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_INFO);
 
         String result = Objects.requireNonNull(customersCollection.find(eq(INFO_ID, infoId)).first()).getString(INFO);
+
+        return result;
+    }
+
+    public static void createNewSavedQueue(String chatId, String savedQueueName, String savedQueue) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        try {
+            customersCollection.insertOne(new Document()
+                    .append(SAVED_QUEUE_ID, chatId)
+                    .append(SAVED_QUEUE_NAME,savedQueueName)
+                    .append(SAVED_QUEUE,savedQueue));
+        } catch (MongoException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean updateSavedQueue(String chatId, String savedQueueName) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        UpdateResult result = customersCollection.updateOne(new Document("$and", Arrays.asList(
+                new Document(SAVED_QUEUE_ID, chatId),
+                new Document(SAVED_QUEUE_NAME, savedQueueName)
+        )), new Document("$set", new Document(SAVED_QUEUE,getQueue(chatId))));
+
+        return result.wasAcknowledged() && result.getModifiedCount() == 1;
+    }
+
+    public static void createNewDefaultSavedQueue(String chatId) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        try {
+            customersCollection.insertOne(new Document()
+                    .append(SAVED_QUEUE_ID, chatId)
+                    .append(SAVED_QUEUE_NAME,DEFAULT_SAVED_QUEUE_NAME)
+                    .append(SAVED_QUEUE, getQueue(chatId)));
+        } catch (MongoException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean updateDefaultSavedQueue(String chatId) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        UpdateResult result = customersCollection.updateOne(new Document("$and", Arrays.asList(
+                new Document(SAVED_QUEUE_ID, chatId),
+                new Document(SAVED_QUEUE_NAME, DEFAULT_SAVED_QUEUE_NAME)
+        )), new Document("$set", new Document(SAVED_QUEUE,getQueue(chatId))));
+
+        return result.wasAcknowledged() && result.getModifiedCount() == 1;
+    }
+
+    public static boolean removeSavedQueue(String chatId, String savedQueueName) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        DeleteResult result = customersCollection.deleteOne(new Document("$and", Arrays.asList(
+                new Document(SAVED_QUEUE_ID, chatId),
+                new Document(SAVED_QUEUE_NAME, savedQueueName)
+        )));
+
+        return result.wasAcknowledged();
+    }
+
+    public static boolean savedQueueExists(String chatId, String savedQueueName) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        Document result = customersCollection.find(new Document("$and", Arrays.asList(
+                new Document(SAVED_QUEUE_ID, chatId),
+                new Document(SAVED_QUEUE_NAME, savedQueueName)
+        ))).first();
+
+        return result != null;
+    }
+
+    public static String getSavedQueue(String chatId, String savedQueueName) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        String result = Objects.requireNonNull(customersCollection.find(new Document("$and", Arrays.asList(
+                new Document(SAVED_QUEUE_ID, chatId),
+                new Document(SAVED_QUEUE_NAME, savedQueueName)
+        ))).first()).getString(SAVED_QUEUE);
+
+        return result;
+    }
+
+    public static int getSavedQueuesCount(String chatId) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        int result = (int) customersCollection.countDocuments(eq(SAVED_QUEUE_ID,chatId));
+
+        return result;
+    }
+
+    public static ArrayList<String> getSavedQueuesNames(String chatId) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SAVED_QUEUES);
+
+        ArrayList<String> result = new ArrayList<>();
+        for (Document doc : Objects.requireNonNull(customersCollection.find(eq(SAVED_QUEUE_ID, chatId)))) {
+            result.add(doc.getString(SAVED_QUEUE_NAME));
+        }
 
         return result;
     }

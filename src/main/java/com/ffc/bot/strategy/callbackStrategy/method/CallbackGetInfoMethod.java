@@ -1,6 +1,6 @@
 package main.java.com.ffc.bot.strategy.callbackStrategy.method;
 
-import main.java.com.ffc.bot.InfoMarkupConstructor;
+import main.java.com.ffc.bot.markupConstructor.InfoMarkupConstructor;
 import main.java.com.ffc.bot.MongoDB;
 import main.java.com.ffc.bot.strategy.CallbackData;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;

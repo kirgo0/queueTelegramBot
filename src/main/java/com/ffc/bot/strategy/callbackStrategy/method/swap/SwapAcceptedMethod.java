@@ -1,7 +1,7 @@
 package main.java.com.ffc.bot.strategy.callbackStrategy.method.swap;
 
 import main.java.com.ffc.bot.MongoDB;
-import main.java.com.ffc.bot.SwapRequestConstructor;
+import main.java.com.ffc.bot.markupConstructor.SwapRequestConstructor;
 import main.java.com.ffc.bot.queueHandler.QueueCallModule;
 import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
 import main.java.com.ffc.bot.responseTextModule.TextFormat;

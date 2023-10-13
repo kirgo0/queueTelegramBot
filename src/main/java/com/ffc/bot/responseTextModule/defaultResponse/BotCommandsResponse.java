@@ -14,6 +14,9 @@ public class BotCommandsResponse {
 //        skipqueuemember - пропустити першого користувача в черзі (якщо заснув)
 //        help - як користуватись ботом
 //        normalizequeue - видалити всі порожні місця в черзі
+//        savequeue - [ім'я збереженої черги] - зберегти чергу
+//        getsavedqueues - отримати список збережених черг
+//        resavequeue - [ім'я існуючої збереженої черги] перезаписати чергу
 
     public static final String CREATE_QUEUE = "/createQueue - створити нову чергу";
     public static final String GET_QUEUE = "/getQueue - отримати чергу";
@@ -26,4 +29,7 @@ public class BotCommandsResponse {
     public static final String SKIP_QUEUE_MEMBER = "/skipQueueMember - пропустити першого користувача в черзі (якщо заснув)";
     public static final String NORMALIZE_QUEUE = "/normalizeQueue - видалити всі порожні місця в черзі";
     public static final String HELP = "/help - як користуватись ботом";
+    public static final String SAVE_QUEUE = "/saveQueue - [ім'я збереженої черги] - зберегти чергу";
+    public static final String GET_SAVED_QUEUES = "/getSavedQueues - отримати список збережених черг";
+    public static final String RESAVE_QUEUE = "/resaveQueue - [ім'я існуючої збереженої черги] перезаписати чергу";
 }

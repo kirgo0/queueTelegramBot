@@ -95,10 +95,13 @@ public class TextUpdateStrategy implements Strategy {
                 "/startcallqueue",
                 "/stopcallqueue",
                 "/skipqueuemember"
-                ,"/normalizequeue"
+                ,"/normalizequeue",
+                "/savequeue",
+                "/getsavedqueues",
+                "/resavequeue"
         );
 
-        if(needsExistingQueueMethods.contains(textUpdate)) {
+        if(needsExistingQueueMethods.contains(textUpdate.split(" ")[0])) {
             if(MongoDB.queueExists(chatId)) {
                 // methods that do not have a built-in check for a closed queue
                 List<String> needsNotClosedQueueMethods = List.of(
@@ -107,9 +110,12 @@ public class TextUpdateStrategy implements Strategy {
                         "/startcallqueue",
                         "/stopcallqueue",
                         "/skipqueuemember",
-                        "/normalizequeue"
+                        "/normalizequeue",
+                        "/savequeue",
+                        "/getsavedqueues",
+                        "/resavequeue"
                 );
-                if(needsNotClosedQueueMethods.contains(textUpdate)) {
+                if(needsNotClosedQueueMethods.contains(textUpdate.split(" ")[0])) {
                     // checking if queue is not closed
                     if(!MongoDB.getFieldValue(MongoDB.QUEUE_STATE, chatId).equalsIgnoreCase(QueueState.CLOSED.toString())) {
                         if(textUpdate.equalsIgnoreCase("/closeQueue")) {
@@ -124,6 +130,12 @@ public class TextUpdateStrategy implements Strategy {
                             responseMethod = new SkipQueueMemberMethod();
                         } else if (textUpdate.equalsIgnoreCase("/normalizequeue")) {
                             responseMethod = new NormalizeQueueMethod();
+                        } else if (textUpdate.contains("/savequeue")) {
+                            responseMethod = new SaveQueueMethod(textUpdate);
+                        } else if (textUpdate.equalsIgnoreCase("/getsavedqueues")) {
+                            responseMethod = new GetSavedQueuesMethod();
+                        }else if (textUpdate.contains("/resavequeue")) {
+                            responseMethod = new ReSaveQueueMethod(textUpdate);
                         }
                     } else {
                         responseMethod = new QueueIsNotOpenMethod();
