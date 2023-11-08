@@ -1,6 +1,7 @@
 package main.java.com.ffc.bot.strategy.callbackStrategy.method.workWithQueue;
 
 import main.java.com.ffc.bot.MongoDB;
+import main.java.com.ffc.bot.markupConstructor.SwapRequestConstructor;
 import main.java.com.ffc.bot.queueHandler.QueueMarkupConstructor;
 import main.java.com.ffc.bot.responseTextModule.ButtonsText;
 import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
@@ -68,75 +69,8 @@ public class QueueOutMethod implements CallbackStrategyMethod {
                 if(!MongoDB.swapRequestExists(chatId,firstUserId,secondUserId) && !MongoDB.swapRequestExists(chatId,secondUserId,firstUserId)) {
                     MongoDB.createNewSwapRequest(chatId,firstUserId,secondUserId,queue.toList().indexOf(userId),queuePos);
                 }
-                // build first user personal response
-                PersonalSendMessage messageToFirstUser = new PersonalSendMessage();
-                messageToFirstUser.setChatId(firstUserId);
 
-                messageToFirstUser.setText(
-                        new ResponseTextBuilder()
-                                .addText(SwapResponse.PERSONAL_REQUEST_TITLE, TextFormat.Bold)
-                                .addTextLine()
-                                .addTextLine(MongoDB.getUserName(secondUserId))
-                                .addText(SwapResponse.USER_WHO_SEND_REQUEST_END)
-                                .get()
-                );
-
-                List<List<InlineKeyboardButton>> firstUserKeyboard = new ArrayList<>();
-
-                InlineKeyboardButton denySwapButton = new InlineKeyboardButton(ButtonsText.DENY_SWAP_REQUEST);
-
-                StringBuilder sb = new StringBuilder();
-                sb.append(chatId).append(CallbackData.SwapDenied).append(secondUserId);
-                denySwapButton.setCallbackData(sb.toString());
-                firstUserKeyboard.add(List.of(denySwapButton));
-
-                InlineKeyboardMarkup markup = new InlineKeyboardMarkup(firstUserKeyboard);
-                messageToFirstUser.setReplyMarkup(markup);
-
-                // build second user personal response
-                PersonalSendMessage messageToSecondUser = new PersonalSendMessage();
-                messageToSecondUser.setChatId(secondUserId);
-
-                String firstUsername = MongoDB.getUserName(firstUserId);
-                messageToSecondUser.setText(
-                        new ResponseTextBuilder()
-                                .addText(SwapResponse.PERSONAL_REQUEST_TITLE, TextFormat.Bold)
-                                .addTextLine()
-                                .addTextLine(firstUsername)
-                                .addText(SwapResponse.USER_WHO_GOT_REQUEST_END)
-                                .addTextLine()
-                                .startFormat(TextFormat.Italic)
-                                .addTextLine(SwapResponse.USER_WHO_GOT_REQUEST_PLACE)
-                                .addText(SwapResponse.BETWEEN_TEXT_AND_NUMBER)
-                                .addText(String.valueOf(queuePos))
-                                .addTextLine(SwapResponse.USER_WHO_SEND_REQUEST_PLACE)
-                                .addText(firstUsername)
-                                .addText(SwapResponse.BETWEEN_TEXT_AND_NUMBER)
-                                .addText(String.valueOf(queue.toList().indexOf(userId)))
-                                .endFormat(TextFormat.Italic)
-                                .get()
-                );
-
-                List<List<InlineKeyboardButton>> secondUserKeyboard = new ArrayList<>();
-
-                InlineKeyboardButton acceptSwapButton = new InlineKeyboardButton(ButtonsText.ACCEPT_SWAP_REQUEST);
-
-                sb = new StringBuilder();
-                sb.append(chatId).append(CallbackData.SwapAccepted).append(firstUserId);
-
-                acceptSwapButton.setCallbackData(sb.toString());
-                secondUserKeyboard.add(List.of(acceptSwapButton));
-
-                denySwapButton = new InlineKeyboardButton(ButtonsText.DENY_SWAP_REQUEST);
-
-                sb = new StringBuilder();
-                sb.append(chatId).append(CallbackData.SwapDenied).append(firstUserId);
-                denySwapButton.setCallbackData(sb.toString());
-                secondUserKeyboard.add(List.of(denySwapButton));
-
-                markup = new InlineKeyboardMarkup(secondUserKeyboard);
-                messageToSecondUser.setReplyMarkup(markup);
-                return List.of(messageToFirstUser,messageToSecondUser);
+                return SwapRequestConstructor.getSwapRequest(chatId, firstUserId, secondUserId, userId, queue, queuePos);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,7 +1,7 @@
 package main.java.com.ffc.bot.strategy.callbackStrategy.method.swap;
 
 import main.java.com.ffc.bot.MongoDB;
-import main.java.com.ffc.bot.markupConstructor.SwapRequestConstructor;
+import main.java.com.ffc.bot.markupConstructor.SwapResponseConstructor;
 import main.java.com.ffc.bot.queueHandler.QueueCallModule;
 import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
 import main.java.com.ffc.bot.responseTextModule.TextFormat;
@@ -65,7 +65,7 @@ public class SwapAcceptedMethod implements CallbackStrategyMethod {
                             methods = new ArrayList<>(new NotifyFirstAndNextQueueUsersMethod(queue).getResponse(update,response,chatId));
                         }
 
-                        methods.addAll(0, SwapRequestConstructor.getSwapRequests(chatId, firstUserId, secondUserId, firstUserPos, secondUserPos));
+                        methods.addAll(0, SwapResponseConstructor.getSwapResponse(chatId, firstUserId, secondUserId, firstUserPos, secondUserPos));
                         return methods;
                     }
                 }

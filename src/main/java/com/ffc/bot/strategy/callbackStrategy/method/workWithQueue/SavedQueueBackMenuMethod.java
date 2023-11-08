@@ -32,8 +32,10 @@ public class SavedQueueBackMenuMethod implements CallbackStrategyMethod {
 
         newMessage.setText(
                 new ResponseTextBuilder()
-                    .addText(WorkWithQueueResponse.SAVED_QUEUES_LIST, TextFormat.Italic)
-                    .get()
+                        .addText(WorkWithQueueResponse.SAVED_QUEUES_TITLE, TextFormat.Bold)
+                        .addTextLine()
+                        .addTextLine(WorkWithQueueResponse.SAVED_QUEUES_LIST)
+                        .get()
         );
 
         newMessage.setReplyMarkup(SavedQueuesConstructor.getSavedQueuesMarkup(chatId));

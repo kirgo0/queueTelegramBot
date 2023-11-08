@@ -1,13 +1,17 @@
 package main.java.com.ffc.bot.strategy.callbackStrategy;
 
 import main.java.com.ffc.bot.*;
+import main.java.com.ffc.bot.scheduler.TaskScheduler;
 import main.java.com.ffc.bot.strategy.CallbackData;
+import main.java.com.ffc.bot.strategy.SchedulerCallbackData;
 import main.java.com.ffc.bot.strategy.Strategy;
 import main.java.com.ffc.bot.strategy.callbackStrategy.method.*;
+import main.java.com.ffc.bot.strategy.callbackStrategy.method.sheduledTasks.*;
 import main.java.com.ffc.bot.strategy.callbackStrategy.method.swap.SwapAcceptedMethod;
 import main.java.com.ffc.bot.strategy.callbackStrategy.method.swap.SwapDeniedMethod;
 import main.java.com.ffc.bot.strategy.callbackStrategy.method.workWithQueue.*;
 import main.java.com.ffc.bot.strategy.textStrategy.method.CheckAuthoriseMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.scheduledTasks.GetScheduledTasksMethod;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -15,6 +19,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.List;
 
 public class CallbackUpdateStrategy implements Strategy {
+
+    TaskScheduler scheduler;
+
+    public CallbackUpdateStrategy(TaskScheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
     @Override
     public List<BotApiMethod> getResponse(Update update) {
 
@@ -44,6 +55,7 @@ public class CallbackUpdateStrategy implements Strategy {
 
         String clickedMessageId = update.getCallbackQuery().getMessage().getMessageId().toString();
 
+
         // check if user clicked on empty button
         if(callbackUpdate.contains(CallbackData.QueueIn.toString())) {
             responseMethod = new QueueInMethod(clickedMessageId);
@@ -70,7 +82,7 @@ public class CallbackUpdateStrategy implements Strategy {
             responseMethod = new SavedQueueBackMenuMethod(clickedMessageId);
         }
         else if (callbackUpdate.contains(CallbackData.RemoveSavedQueue.toString())) {
-            responseMethod = new RemoveSavedQueueMethod(clickedMessageId);
+            responseMethod = new RemoveSavedQueueMethod();
         }
         else if (callbackUpdate.contains(CallbackData.LoadSavedQueue.toString())) {
             responseMethod = new LoadSavedQueueMethod(clickedMessageId);
@@ -80,6 +92,34 @@ public class CallbackUpdateStrategy implements Strategy {
         }
         else if (callbackUpdate.contains(CallbackData.DenySavedQueue.toString())) {
             responseMethod = new DenyRemoveSavedQueueMethod(clickedMessageId);
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerGet.toString())) {
+            responseMethod = new GetTaskMethod(clickedMessageId);
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerMenu.toString())) {
+            responseMethod = new GetScheduledTasksMethod(clickedMessageId);
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerTaskDelete.toString())) {
+            responseMethod = new DeleteScheduledTaskMethod();
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerAcceptTaskDelete.toString())) {
+            responseMethod = new AcceptDeleteScheduledTaskMethod(scheduler);
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerPlusMin.toString()) ||
+                callbackUpdate.contains(SchedulerCallbackData.SchedulerMinusMin.toString())) {
+            responseMethod = new ChangeMinutesForTaskMethod(clickedMessageId, scheduler);
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerPlusDay.toString()) ||
+                callbackUpdate.contains(SchedulerCallbackData.SchedulerMinusDay.toString())) {
+            responseMethod = new ChangeDayOfWeekForTaskMethod(clickedMessageId, scheduler);
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerFirstWeek.toString()) ||
+                callbackUpdate.contains(SchedulerCallbackData.SchedulerSecondWeek.toString())) {
+            responseMethod = new ChangeWeekNumberForTaskMethod(clickedMessageId, scheduler);
+        }
+        else if (callbackUpdate.contains(SchedulerCallbackData.SchedulerPlusQueueSize.toString()) ||
+                callbackUpdate.contains(SchedulerCallbackData.SchedulerMinusQueueSize.toString())) {
+            responseMethod = new ChangeQueueSizeForTaskMethod(clickedMessageId);
         }
 
         if(responseMethod != null) return responseMethod.getResponse(update, response, chatId, userId, callbackUpdate);

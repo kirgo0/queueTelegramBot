@@ -4,6 +4,7 @@ import main.java.com.ffc.bot.*;
 import main.java.com.ffc.bot.responseTextModule.ResponseTextBuilder;
 import main.java.com.ffc.bot.responseTextModule.TextFormat;
 import main.java.com.ffc.bot.responseTextModule.defaultResponse.DefaultQueueResponse;
+import main.java.com.ffc.bot.scheduler.TaskScheduler;
 import main.java.com.ffc.bot.specialMessage.PersonalSendMessage;
 import main.java.com.ffc.bot.state.QueueState;
 import main.java.com.ffc.bot.strategy.Strategy;
@@ -15,6 +16,8 @@ import main.java.com.ffc.bot.strategy.textStrategy.method.callQueue.StopCallQueu
 import main.java.com.ffc.bot.strategy.textStrategy.method.error.MessageIsPersonalMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.error.QueueDoesNotExistDefaultMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.error.QueueIsNotOpenMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.scheduledTasks.CreateScheduledTaskMethod;
+import main.java.com.ffc.bot.strategy.textStrategy.method.scheduledTasks.GetScheduledTasksMethod;
 import main.java.com.ffc.bot.strategy.textStrategy.method.workWithQueue.*;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -23,6 +26,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.List;
 
 public class TextUpdateStrategy implements Strategy {
+
+    private TaskScheduler scheduler;
+
+    public TextUpdateStrategy(TaskScheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
     @Override
     public List<BotApiMethod> getResponse(Update update) {
 
@@ -164,6 +174,11 @@ public class TextUpdateStrategy implements Strategy {
                 responseMethod = new SetDefaultQueueSizeMethod(textUpdate);
             } else if(textUpdate.equalsIgnoreCase("/changeQueueView")) {
                 responseMethod = new ChangeQueueViewMethod();
+            } else if(textUpdate.contains("/createscheduledtask")) {
+                String name = textUpdate.replaceFirst("/createscheduledtask","").trim();
+                responseMethod = new CreateScheduledTaskMethod(scheduler, name);
+            } else if(textUpdate.equalsIgnoreCase("/getscheduledtasks")) {
+                responseMethod = new GetScheduledTasksMethod();
             }
         }
 

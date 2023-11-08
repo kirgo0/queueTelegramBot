@@ -1,6 +1,7 @@
 package main.java.com.ffc.bot.markupConstructor;
 
 import main.java.com.ffc.bot.MongoDB;
+import main.java.com.ffc.bot.responseTextModule.ButtonsText;
 import main.java.com.ffc.bot.strategy.CallbackData;
 import org.json.JSONArray;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -45,12 +46,12 @@ public class SavedQueuesConstructor {
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         InlineKeyboardButton backButton = new InlineKeyboardButton();
-        backButton.setText("↪️");
+        backButton.setText(ButtonsText.BACK_IN_MENU);
         backButton.setCallbackData(CallbackData.SaveQueueBackMenu.toString());
         row.add(backButton);
 
         InlineKeyboardButton loadButton = new InlineKeyboardButton();
-        loadButton.setText("✅");
+        loadButton.setText(ButtonsText.ACCEPT_ACTION);
         StringBuilder sb = new StringBuilder();
         sb.append(CallbackData.LoadSavedQueue).append(savedQueueName);
         loadButton.setCallbackData(sb.toString());
@@ -58,7 +59,7 @@ public class SavedQueuesConstructor {
 
         if(!savedQueueName.equalsIgnoreCase(MongoDB.DEFAULT_SAVED_QUEUE_NAME)) {
             InlineKeyboardButton removeButton = new InlineKeyboardButton();
-            removeButton.setText("❌ ");
+            removeButton.setText(ButtonsText.DENY_ACTION);
             sb = new StringBuilder();
             sb.append(CallbackData.RemoveSavedQueue).append(savedQueueName);
             removeButton.setCallbackData(sb.toString());

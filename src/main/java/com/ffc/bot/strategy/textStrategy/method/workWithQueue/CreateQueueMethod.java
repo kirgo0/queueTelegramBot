@@ -65,6 +65,7 @@ public class CreateQueueMethod implements TextStrategyMethod {
         }
 
         MongoDB.updateQueue(queue.toString(), chatId);
+        MongoDB.updateField(MongoDB.QUEUE_STATE, QueueState.IN_PROCESS.toString(), chatId);
 
         response.setReplyMarkup(QueueMarkupConstructor.getMarkup(chatId));
         return List.of(response);

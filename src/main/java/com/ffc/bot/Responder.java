@@ -1,5 +1,6 @@
 package main.java.com.ffc.bot;
 
+import main.java.com.ffc.bot.scheduler.TaskScheduler;
 import main.java.com.ffc.bot.specialMessage.AuthoriseMessage;
 import main.java.com.ffc.bot.specialMessage.ChatJoinMessage;
 import main.java.com.ffc.bot.strategy.callbackStrategy.CallbackUpdateStrategy;
@@ -15,6 +16,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.List;
 
 public class Responder extends TelegramLongPollingBot {
+
+    private TaskScheduler scheduler;
+
     @Override
     public String getBotUsername() {
         return PropertiesReader.getProperty("bot_name");
@@ -34,14 +38,18 @@ public class Responder extends TelegramLongPollingBot {
             methods = new ChatJoinStrategy().getResponse(update);
         }
         if(update.hasMessage()) {
-            methods = new TextUpdateStrategy().getResponse(update);
+            methods = new TextUpdateStrategy(scheduler).getResponse(update);
         }
         if(update.hasCallbackQuery()) {
-            methods = new CallbackUpdateStrategy().getResponse(update);
+            methods = new CallbackUpdateStrategy(scheduler).getResponse(update);
         }
 
         if(methods == null) return;
 
+        SendMessages(methods);
+    }
+
+    public void SendMessages(List<BotApiMethod> methods) {
         for (BotApiMethod method :
                 methods) {
             try {
@@ -80,4 +88,15 @@ public class Responder extends TelegramLongPollingBot {
         }
     }
 
+    public void SendScheduledMessage(SendMessage method) {
+        try {
+            sendApiMethod(method);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void registerScheduler(TaskScheduler scheduler) {
+        this.scheduler = scheduler;
+    }
 }

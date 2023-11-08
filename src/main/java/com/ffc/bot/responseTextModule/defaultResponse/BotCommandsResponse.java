@@ -17,6 +17,8 @@ public class BotCommandsResponse {
 //        savequeue - [ім'я збереженої черги] - зберегти чергу
 //        getsavedqueues - отримати список збережених черг
 //        resavequeue - [ім'я існуючої збереженої черги] перезаписати чергу
+//        getscheduledtasks - отримати список запланованих черг
+//        createscheduledtask - [ім'я запланованої черги] створити заплановану чергу
 
     public static final String CREATE_QUEUE = "/createQueue - створити нову чергу";
     public static final String GET_QUEUE = "/getQueue - отримати чергу";
@@ -32,4 +34,6 @@ public class BotCommandsResponse {
     public static final String SAVE_QUEUE = "/saveQueue - [ім'я збереженої черги] - зберегти чергу";
     public static final String GET_SAVED_QUEUES = "/getSavedQueues - отримати список збережених черг";
     public static final String RESAVE_QUEUE = "/resaveQueue - [ім'я існуючої збереженої черги] перезаписати чергу";
+    public static final String GET_SCHEDULED_TASKS = "/getScheduledTasks - отримати список запланованих черг";
+    public static final String CREATE_SCHEDULED_TASK = "/createScheduledTask -  [ім'я запланованої черги] створити заплановану чергу";
 }

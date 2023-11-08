@@ -25,7 +25,15 @@ public class ReSaveQueueMethod implements TextStrategyMethod {
         String savedQueueName = textUpdate;
 
         if(savedQueueName.length() == 0) {
-            return null;
+            response.setText(
+                    new ResponseTextBuilder()
+                            .addText(WorkWithQueueResponse.SAVED_QUEUE_NO_PARAMS, TextFormat.Monocular)
+                            .addTextLine()
+                            .addTextLine(BotCommandsResponse.RESAVE_QUEUE, TextFormat.Bold)
+                            .get()
+            );
+
+            return List.of(response);
         }
 
         if(MongoDB.savedQueueExists(chatId, savedQueueName)) {

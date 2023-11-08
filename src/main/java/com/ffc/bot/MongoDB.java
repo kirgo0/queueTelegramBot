@@ -1,9 +1,15 @@
 package main.java.com.ffc.bot;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import main.java.com.ffc.bot.scheduler.ActionType;
+import main.java.com.ffc.bot.scheduler.ScheduledTask;
+import main.java.com.ffc.bot.scheduler.WeekNumber;
 import main.java.com.ffc.bot.state.QueueState;
 import main.java.com.ffc.bot.state.SwapRequestState;
 import org.bson.BsonDocument;
@@ -11,6 +17,8 @@ import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -56,6 +64,10 @@ public class MongoDB {
     public static final String SAVED_QUEUE_NAME = "QUEUE_NAME";
     public static final String SAVED_QUEUE = "QUEUE";
 
+    private static final String DATABASE_SCHEDULED_TASKS = "scheduledTasks";
+    public static final String TASK_CHAT_ID = "TASK_CHAT_ID";
+    public static final String TASK_NAME = "TASK_NAME";
+    public static final String TASK_OBJECT = "TASK_OBJECT";
 
     public static void connectToDatabase() {
         String uri = PropertiesReader.getProperty("mongo_db");
@@ -431,5 +443,128 @@ public class MongoDB {
         }
 
         return result;
+    }
+
+    public static void createNewScheduledTask(String chatId, String taskName) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SCHEDULED_TASKS);
+        var time = ((LocalTime.now().getMinute() + 4)/5)*5;
+        try {
+            var queueSize = Integer.parseInt(getFieldValue(DEFAULT_QUEUE_SIZE,chatId));
+            LocalTime taskTime;
+            if(time + 5 > 59) {
+                taskTime = LocalTime.now().withMinute(5);
+                taskTime = taskTime.plusHours(1);
+            } else {
+                taskTime = LocalTime.now().withMinute(time + 5);
+            }
+
+            customersCollection.insertOne(new Document()
+                    .append(TASK_CHAT_ID, chatId)
+                    .append(TASK_NAME,taskName)
+                    .append(TASK_OBJECT, new ObjectMapper()
+                            .registerModule(new JavaTimeModule())
+                                .writeValueAsString(new ScheduledTask(
+                                    chatId,
+                                    taskName,
+                                    ActionType.CREATE,
+                                    LocalDate.now().getDayOfWeek(),
+                                    taskTime,
+                                    WeekNumber.FIRST,
+                                    queueSize > 0 ? queueSize : HttpClient.getChannelMembersCount(chatId)
+                    )))
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean updateScheduledTask(String chatId, String taskName, ScheduledTask newTask) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SCHEDULED_TASKS);
+
+        UpdateResult result = null;
+        try {
+            result = customersCollection.updateOne(new Document("$and", Arrays.asList(
+                    new Document(TASK_CHAT_ID, chatId),
+                    new Document(TASK_NAME, taskName)
+            )), new Document("$set", new Document(TASK_OBJECT,
+                    new ObjectMapper()
+                            .registerModule(new JavaTimeModule())
+                            .writeValueAsString(
+                                    newTask)
+            )));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return result.wasAcknowledged() && result.getModifiedCount() == 1;
+    }
+
+    public static ScheduledTask getScheduledTask(String chatId, String taskName) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SCHEDULED_TASKS);
+
+        ScheduledTask result = null;
+
+        try {
+            var resultJSON = customersCollection.find(
+                    new Document("$and", Arrays.asList(
+                            new Document(TASK_CHAT_ID, chatId),
+                            new Document(TASK_NAME, taskName)
+                    ))
+            ).first();
+            if(resultJSON == null) return null;
+            var a = resultJSON.getString(TASK_OBJECT);
+            result = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(a,ScheduledTask.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static ArrayList<ScheduledTask> getScheduledTasks() {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SCHEDULED_TASKS);
+
+        ArrayList<ScheduledTask> result = new ArrayList<>();
+        for (Document doc : Objects.requireNonNull(customersCollection.find())) {
+            try {
+                ScheduledTask obj = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(doc.getString(TASK_OBJECT), ScheduledTask.class);
+                result.add(obj);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        return result.size() > 0 ? result : null;
+    }
+
+    public static ArrayList<ScheduledTask> getScheduledTasks(String chatId) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SCHEDULED_TASKS);
+
+        ArrayList<ScheduledTask> result = new ArrayList<>();
+        for (Document doc : Objects.requireNonNull(customersCollection.find(eq(TASK_CHAT_ID,chatId)))) {
+            try {
+            ScheduledTask obj = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(doc.getString(TASK_OBJECT), ScheduledTask.class);
+                result.add(obj);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        return result.size() > 0 ? result : null;
+    }
+
+    public static boolean deleteScheduledTask(String chatId, String taskName) {
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> customersCollection = mongoDatabase.getCollection(DATABASE_SCHEDULED_TASKS);
+
+        DeleteResult result = customersCollection.deleteOne(new Document("$and", Arrays.asList(
+                new Document(TASK_CHAT_ID, chatId),
+                new Document(TASK_NAME, taskName)
+        )));
+
+        return result.wasAcknowledged();
     }
 }

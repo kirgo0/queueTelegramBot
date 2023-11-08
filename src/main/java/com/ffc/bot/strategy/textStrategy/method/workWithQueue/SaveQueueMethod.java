@@ -26,7 +26,16 @@ public class SaveQueueMethod implements TextStrategyMethod {
         String savedQueueName = textUpdate;
 
         if(savedQueueName.length() == 0) {
-            return null;
+
+            response.setText(
+                    new ResponseTextBuilder()
+                            .addText(WorkWithQueueResponse.SAVED_QUEUE_NO_PARAMS, TextFormat.Monocular)
+                            .addTextLine()
+                            .addTextLine(BotCommandsResponse.SAVE_QUEUE, TextFormat.Bold)
+                            .get()
+            );
+
+            return List.of(response);
         }
 
         if(savedQueueName.equalsIgnoreCase(MongoDB.DEFAULT_SAVED_QUEUE_NAME)) {
